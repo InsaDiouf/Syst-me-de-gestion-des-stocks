@@ -1,0 +1,91 @@
+<?php
+include_once '../includes/connection.php';
+include_once '../includes/sidebar.php'; 
+
+$query = 'SELECT ID, t.TYPE
+          FROM users u
+          JOIN type t ON t.TYPE_ID=u.TYPE_ID WHERE ID = '.$_SESSION['MEMBER_ID'].'';
+$result = mysqli_query($db, $query) or die (mysqli_error($db));
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $Aa = $row['TYPE'];
+    
+    if ($Aa == 'User') {
+?>
+  <script type="text/javascript">
+    //then it will be redirected
+    alert("Page restreinte! Vous serez redirigé vers le POS");
+    window.location = "pos.php";
+  </script>
+<?php
+    }           
+}
+            
+$sql = "SELECT DISTINCT CNAME, CATEGORY_ID FROM category ORDER BY CNAME ASC";
+$result = mysqli_query($db, $sql) or die ("Mauvais SQL: $sql");
+
+$opt = "<select class='form-control' name='category'>
+        <option disabled selected>Sélectionner une catégorie</option>";
+while ($row = mysqli_fetch_assoc($result)) {
+    $opt .= "<option value='".$row['CATEGORY_ID']."'>".$row['CNAME']."</option>";
+}
+$opt .= "</select>";
+
+$sql2 = "SELECT DISTINCT SUPPLIER_ID, COMPANY_NAME FROM supplier ORDER BY COMPANY_NAME ASC";
+$result2 = mysqli_query($db, $sql2) or die ("Mauvais SQL: $sql2");
+
+$sup = "<select class='form-control' name='supplier'>
+        <option disabled selected>Sélectionner un fournisseur</option>";
+while ($row = mysqli_fetch_assoc($result2)) {
+    $sup .= "<option value='".$row['SUPPLIER_ID']."'>".$row['COMPANY_NAME']."</option>";
+}
+$sup .= "</select>";
+?>
+<center>
+  <div class="card shadow mb-4 col-xs-12 col-md-8 border-bottom-primary">
+    <div class="card-header py-3">
+      <h4 class="m-2 font-weight-bold text-primary">Ajouter un produit</h4>
+    </div>
+    <a href="product.php?action=add" type="button" class="btn btn-primary bg-gradient-primary">Retour</a>
+    <div class="card-body">
+      <div class="table-responsive">
+        <form role="form" method="post" action="pro_transac.php?action=add">
+          <div class="form-group">
+            <input class="form-control" placeholder="Code Produit" name="prodcode" required>
+          </div>
+          <div class="form-group">
+            <input class="form-control" placeholder="Nom" name="name" required>
+          </div>
+          <div class="form-group">
+            <textarea rows="5" cols="50" class="form-control" placeholder="Description" name="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <input type="number" min="1" max="999999999" class="form-control" placeholder="Quantité" name="quantity" required>
+          </div>
+          <div class="form-group">
+            <input type="number" min="1" max="999999999" class="form-control" placeholder="En main" name="onhand" required>
+          </div>
+          <div class="form-group">
+            <input type="number" min="1" max="9999999999" class="form-control" placeholder="Prix" name="price" required>
+          </div>
+          <div class="form-group">
+            <?php echo $opt; ?>
+          </div>
+          <div class="form-group">
+            <?php echo $sup; ?>
+          </div>
+          <div class="form-group">
+            <input type="date" class="form-control" placeholder="Date de stock" name="datestock" required>
+          </div>
+          <hr>
+          <button type="submit" class="btn btn-success btn-block"><i class="fa fa-check fa-fw"></i>Enregistrer</button>
+          <button type="reset" class="btn btn-danger btn-block"><i class="fa fa-times fa-fw"></i>Réinitialiser</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</center>
+
+<?php
+include '../includes/footer.php';
+?>
